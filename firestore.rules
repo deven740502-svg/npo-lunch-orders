@@ -1,0 +1,92 @@
+// ============================================================
+// 智慧點餐系統 Firestore Security Rules（v1.0.0）
+//
+// ⚠️ 發布方式：本檔為 repo 內的版本控制副本，「不會」自動生效。
+//    需登入 Firebase Console（你的專案）→
+//    Firestore Database → 規則 → 貼上本檔內容 → 按「發布」才會套用。
+//
+// 前提（缺一則本規則會把正常使用者一併擋在門外）：
+//    1. Authentication → Sign-in method 已啟用 Email/Password
+//    2. 已建立四個帳號（有幾個工坊就建幾個工坊帳號）：
+//         sunny@lunch.local      （陽光工坊 PIN）
+//         river@lunch.local      （河岸工坊 PIN）
+//         admin@lunch.local      （管理員密碼，僅前端閘門用）
+//         sysadmin@lunch.local   （系統管理員主密碼，維護 units）
+//    3. Authentication → Sign-in method 的「匿名」應設為停用
+//       （本版不使用匿名登入；停用後舊分頁殘留的匿名 token
+//        會被本規則的 signedIn() 排除，前端亦會自動 signOut）
+//
+// 防護模型：
+//    signedIn()  = 已登入且非匿名。
+//    工坊資料以 email 綁定：workshops/{wid}/** 僅該工坊帳號（或 admin /
+//    sysadmin）可讀寫，達成 per-workshop 隔離。
+//    管理員密碼仍是「前端閘門」（決定看不看得到管理畫面），
+//    資料層權限由工坊帳號本身決定，不因通過前端閘門而擴大。
+//    店家與菜單為兩工坊共用資料，故對任何非匿名帳號開放讀寫。
+//
+// 白名單原則：
+//    僅開放 index.html 實際使用的路徑。appId 路徑段硬編碼為
+//    lunch-orders（＝ index.html 的 appId 常數）；改了 appId 就要
+//    同步改本檔這一段，兩邊不一致會全部讀寫失敗。
+//    白名單以外的所有路徑一律拒絕。
+//
+// 回退方式：規則若擋住正常操作，先把 match 段暫時改成
+//    `allow read, write: if signedIn();`（已登入即可讀寫的寬鬆版）
+//    確認問題出在規則層，再逐條收回來。
+// ============================================================
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 已登入且非匿名帳號
+    function signedIn() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function emailIs(name) {
+      return signedIn() && request.auth.token.email == name + '@lunch.local';
+    }
+
+    function isSysAdmin() {
+      return emailIs('sysadmin');
+    }
+
+    function isAdmin() {
+      return emailIs('admin');
+    }
+
+    match /artifacts/lunch-orders/public/data {
+
+      // 工坊單位設定（units）：
+      //   讀 — 登入頁需在登入「前」列出工坊清單，故公開讀。
+      //        本集合不含任何密碼素材，也沒有個人資料（id/label/label_en/
+      //        color/address/order/active/menuGroup/subsidyAmount）。
+      //   寫 — 僅系統管理員面板（sysadmin 帳號）。
+      match /units/{unitId} {
+        allow read: if true;
+        allow write: if isSysAdmin();
+      }
+
+      // 店家與菜單集合（集合名為前綴式，兩工坊共用）：
+      //   shops_shared / menu_shared
+      //   shops_group_{groupId} / menu_group_{groupId}（菜單群組，含遷移工具寫入）
+      //   shops_{workshopId} / menu_{workshopId}（工坊獨立菜單）
+      match /{menuCollection}/{itemId} {
+        allow read, write: if signedIn()
+          && (menuCollection.matches('shops_.*') || menuCollection.matches('menu_.*'));
+      }
+
+      // 工坊專屬子集合：訂單／人員／設定（settings 下有 schedule、today、leave 三份文件）
+      // 限該工坊自己的帳號；admin 與 sysadmin 亦可存取（維護用）
+      match /workshops/{workshopId}/{document=**} {
+        allow read, write: if emailIs(workshopId) || isAdmin() || isSysAdmin();
+      }
+    }
+
+    // 白名單外路徑全擋（Firestore 預設即拒絕未匹配路徑，此處明示意圖）
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

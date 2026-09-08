@@ -1,0 +1,29 @@
+[build]
+  # 比對「上次成功建置 → 本次」全範圍（官方推薦變數）；若寫成 HEAD^ HEAD 只看最後一個
+  # commit，多 commit 一次 push 且尾端為文件 commit 時會誤跳過部署
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- index.html"
+
+# 安全標頭。以下四條預設啟用，不會影響任何功能。
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # 不允許本站被別的網站用 iframe 嵌進去（防點擊劫持）
+    X-Frame-Options = "DENY"
+    # 瀏覽器不要自作聰明猜檔案型別
+    X-Content-Type-Options = "nosniff"
+    # 連到外站時只送出來源網域，不送完整網址
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # 關掉用不到的裝置權限；camera 要留著（拍菜單照片會用到）
+    Permissions-Policy = "geolocation=(), microphone=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+
+    # Content-Security-Policy（內容安全政策）預設「不開」。
+    #
+    # 為什麼不開：這個網頁用 Tailwind CDN 與 Babel standalone 在瀏覽器裡即時編譯，
+    # 兩者都必須有 'unsafe-eval'，React 的 inline style 又需要 'unsafe-inline'，
+    # 開了之後擋得住的攻擊有限，卻多了一個「漏掉某個 CDN 就整頁空白」的機關。
+    #
+    # 想開的話：先把下面那行的 # 拿掉，丟到 Netlify 的 draft（預覽）網址測一次，
+    # 確認畫面、登入、拍照都正常，再推到正式站。
+    # 真的要更嚴格的 CSP，得先把上面那些 CDN 換成放在 assets/ 裡的本地檔案。
+    #
+    # Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://unpkg.com https://esm.sh https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://esm.sh https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com; frame-ancestors 'none'; base-uri 'self'"

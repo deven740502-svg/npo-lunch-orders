@@ -1,0 +1,40 @@
+"Commons Clause" License Condition v1.0
+
+The Software is provided to you by the Licensor under the License, as defined below, subject to the following condition.
+
+Without limiting other conditions in the License, the grant of rights under the License will not include, and the License does not grant to you, the right to Sell the Software.
+
+For purposes of the foregoing, "Sell" means practicing any or all of the rights granted to you under the License to provide to third parties, for a fee or other consideration (including without limitation fees for hosting or consulting/ support services related to the Software), a product or service whose value derives, entirely or substantially, from the functionality of the Software. Any license notice or attribution required by the License must also include this Commons Clause License Condition notice.
+
+Software: npo-lunch-orders（智慧點餐小幫手）
+License: MIT
+Licensor: 財團法人天主教白永恩神父社會福利基金會（台南辦公室）
+
+Additional Condition (Attribution Notice / 署名保留條件):
+The attribution line displayed in the Software's user interface, "白永恩基金會台南辦公室開發", must be retained, visible and unaltered in all copies and derivative works of the Software, in addition to the copyright notice required by the License below.
+本軟體使用者介面中顯示的署名「白永恩基金會台南辦公室開發」，於所有重製與衍生版本中均應保留、可見且不得變更；此為下列 MIT 授權所要求版權聲明之外的附加條件。
+
+------------------------------------------------------------------------
+
+
+MIT License
+
+Copyright (c) 2026 財團法人天主教白永恩神父社會福利基金會
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
