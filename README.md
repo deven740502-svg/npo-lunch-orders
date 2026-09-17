@@ -127,6 +127,8 @@ const firebaseConfig = {
 | Firebase Console 的帳號名前綴 `sunny@lunch.local` | 建帳號時就要用新代號 |
 | Firestore 資料庫 `units` 集合裡的文件 | 進系統後用「系統管理面板」新增或修改，不必手動改資料庫 |
 
+四處沒對上時，登入畫面只會說「密碼錯誤」，不會告訴你這個帳號根本不存在。遇到怎麼打都登不進去，先回頭把上面四處核對一遍。
+
 正式上線後，單位清單是從 Firestore 的 `units` 集合讀的；`WORKSHOPS_FALLBACK` 只是「資料庫整個讀不到時」的備胎。所以實務上：先用 sysadmin 密碼進系統管理面板把單位建好，`WORKSHOPS_FALLBACK` 再改成同樣的內容當備援。
 
 ### 改顏色
